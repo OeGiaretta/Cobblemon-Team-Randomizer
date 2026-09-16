@@ -2153,7 +2153,7 @@
     "types": [
       "fire"
     ],
-    "isStarter": false
+    "isStarter": true
   },
   {
     "id": 256,
