@@ -7,6 +7,7 @@ import '../widgets/app_header.dart';
 import '../widgets/player_panel.dart';
 import '../widgets/randomize_button.dart';
 import '../widgets/team_card.dart';
+import '../widgets/results_header.dart';
 
 import '../data/pokemon_repository.dart';
 
@@ -193,29 +194,41 @@ class _HomePageState extends State<HomePage> {
                 ],
 
                 if (_players.isNotEmpty) ...[
-                  const SizedBox(height: 40),
+                const SizedBox(height: 40),
 
-                  LayoutBuilder(
+                ResultsHeader(
+                    playerCount: _players.length,
+                    pokemonCount: _players.fold<int>(
+                    0,
+                    (total, player) => total + player.team.length,
+                    ),
+                ),
+
+                const SizedBox(height: 24),
+
+                LayoutBuilder(
                     builder: (context, constraints) {
-                      final cardWidth = constraints.maxWidth >= 1100
-                          ? 520.0
-                          : constraints.maxWidth >= 700
-                          ? 480.0
-                          : constraints.maxWidth;
+                    final cardWidth = constraints.maxWidth >= 1100
+                        ? 520.0
+                        : constraints.maxWidth >= 700
+                            ? 480.0
+                            : constraints.maxWidth;
 
-                      return Wrap(
+                    return Wrap(
                         spacing: 24,
                         runSpacing: 24,
                         alignment: WrapAlignment.center,
                         children: _players.map((player) {
-                          return SizedBox(
+                        return SizedBox(
                             width: cardWidth,
-                            child: TeamCard(player: player),
-                          );
+                            child: TeamCard(
+                            player: player,
+                            ),
+                        );
                         }).toList(),
-                      );
+                    );
                     },
-                  ),
+                ),
                 ],
               ],
             ),

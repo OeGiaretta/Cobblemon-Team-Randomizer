@@ -7,10 +7,7 @@ import '../widgets/type_badge.dart';
 class TeamRevealPage extends StatefulWidget {
   final List<Player> players;
 
-  const TeamRevealPage({
-    super.key,
-    required this.players,
-  });
+  const TeamRevealPage({super.key, required this.players});
 
   @override
   State<TeamRevealPage> createState() => _TeamRevealPageState();
@@ -21,6 +18,223 @@ class _TeamRevealPageState extends State<TeamRevealPage> {
   int _revealedPokemonCount = 0;
   int _currentPlayerIndex = 0;
   int? _countdown;
+  bool _showFinalScreen = false;
+
+  Widget _buildFinalScreen() {
+    final totalPlayers = widget.players.length;
+
+    final totalPokemon = widget.players.fold<int>(
+      0,
+      (total, player) => total + player.team.length,
+    );
+
+    return Scaffold(
+      backgroundColor: const Color(0xFF080B10),
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: TweenAnimationBuilder<double>(
+              tween: Tween<double>(
+                begin: 0.0,
+                end: 1.0,
+              ),
+              duration: const Duration(milliseconds: 800),
+              curve: Curves.easeOutCubic,
+              builder: (context, value, child) {
+                return Opacity(
+                  opacity: value,
+                  child: Transform.translate(
+                    offset: Offset(
+                      0,
+                      30 * (1 - value),
+                    ),
+                    child: Transform.scale(
+                      scale: 0.92 + (0.08 * value),
+                      child: child,
+                    ),
+                  ),
+                );
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // TROFÉU
+                  Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: const Color(0xFFFFC857)
+                          .withValues(alpha: 0.10),
+                      border: Border.all(
+                        color: const Color(0xFFFFC857)
+                            .withValues(alpha: 0.35),
+                        width: 2,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFFFC857)
+                              .withValues(alpha: 0.12),
+                          blurRadius: 40,
+                          spreadRadius: 5,
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.emoji_events_rounded,
+                      size: 50,
+                      color: Color(0xFFFFC857),
+                    ),
+                  ),
+
+                  const SizedBox(height: 32),
+
+                  // TÍTULO
+                  const Text(
+                    'SORTEIO CONCLUÍDO',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 36,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: -0.8,
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  // SUBTÍTULO
+                  Text(
+                    'Todos os times estão prontos!',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.55),
+                      fontSize: 16,
+                    ),
+                  ),
+
+                  const SizedBox(height: 36),
+
+                  // ESTATÍSTICAS
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 12,
+                    runSpacing: 12,
+                    children: [
+                      _buildFinalStat(
+                        Icons.groups_rounded,
+                        '$totalPlayers',
+                        totalPlayers == 1
+                            ? 'JOGADOR'
+                            : 'JOGADORES',
+                      ),
+                      _buildFinalStat(
+                        Icons.catching_pokemon_rounded,
+                        '$totalPokemon',
+                        'POKÉMON',
+                      ),
+                      _buildFinalStat(
+                        Icons.check_circle_outline_rounded,
+                        '0',
+                        'REPETIDOS',
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 40),
+
+                  // BOTÃO
+                  SizedBox(
+                    width: 300,
+                    child: FilledButton.icon(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(
+                        Icons.groups_rounded,
+                      ),
+                      label: const Text(
+                        'VER TODOS OS TIMES',
+                      ),
+                      style: FilledButton.styleFrom(
+                        backgroundColor:
+                            const Color(0xFFE53935),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 18,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        textStyle: const TextStyle(
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFinalStat(
+    IconData icon,
+    String value,
+    String label,
+  ) {
+    return Container(
+      width: 130,
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 18,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.035),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.08),
+        ),
+      ),
+      child: Column(
+        children: [
+          Icon(
+            icon,
+            color: const Color(0xFFFF6B6B),
+            size: 22,
+          ),
+
+          const SizedBox(height: 10),
+
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+
+          const SizedBox(height: 3),
+
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.40),
+              fontSize: 9,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.8,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   Future<void> _revealTeam() async {
     for (int number = 3; number >= 1; number--) {
@@ -30,9 +244,7 @@ class _TeamRevealPageState extends State<TeamRevealPage> {
         _countdown = number;
       });
 
-      await Future.delayed(
-        const Duration(milliseconds: 700),
-      );
+      await Future.delayed(const Duration(milliseconds: 700));
     }
 
     if (!mounted) return;
@@ -43,9 +255,7 @@ class _TeamRevealPageState extends State<TeamRevealPage> {
     });
 
     // Mantém o Starter sozinho na tela por um momento.
-    await Future.delayed(
-      const Duration(milliseconds: 1400),
-    );
+    await Future.delayed(const Duration(milliseconds: 1400));
 
     for (int i = 1; i <= 5; i++) {
       if (!mounted) return;
@@ -54,9 +264,7 @@ class _TeamRevealPageState extends State<TeamRevealPage> {
         _revealedPokemonCount = i;
       });
 
-      await Future.delayed(
-        const Duration(milliseconds: 700),
-      );
+      await Future.delayed(const Duration(milliseconds: 700));
     }
   }
 
@@ -74,11 +282,13 @@ class _TeamRevealPageState extends State<TeamRevealPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_showFinalScreen) {
+      return _buildFinalScreen();
+    }
+
     final player = widget.players[_currentPlayerIndex];
 
-    final starter = player.team.firstWhere(
-      (pokemon) => pokemon.isStarter,
-    );
+    final starter = player.team.firstWhere((pokemon) => pokemon.isStarter);
 
     final remainingPokemon = player.team
         .where((pokemon) => !pokemon.isStarter)
@@ -94,10 +304,7 @@ class _TeamRevealPageState extends State<TeamRevealPage> {
               left: 20,
               child: IconButton(
                 onPressed: () => Navigator.pop(context),
-                icon: const Icon(
-                  Icons.close_rounded,
-                  color: Colors.white70,
-                ),
+                icon: const Icon(Icons.close_rounded, color: Colors.white70),
               ),
             ),
 
@@ -119,13 +326,37 @@ class _TeamRevealPageState extends State<TeamRevealPage> {
 
                     const SizedBox(height: 12),
 
-                    Text(
-                      player.name.toUpperCase(),
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 42,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: -1,
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 500),
+                      transitionBuilder: (child, animation) {
+                        final offsetAnimation =
+                            Tween<Offset>(
+                              begin: const Offset(0.25, 0),
+                              end: Offset.zero,
+                            ).animate(
+                              CurvedAnimation(
+                                parent: animation,
+                                curve: Curves.easeOutCubic,
+                              ),
+                            );
+
+                        return FadeTransition(
+                          opacity: animation,
+                          child: SlideTransition(
+                            position: offsetAnimation,
+                            child: child,
+                          ),
+                        );
+                      },
+                      child: Text(
+                        player.name.toUpperCase(),
+                        key: ValueKey(_currentPlayerIndex),
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 42,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: -1,
+                        ),
                       ),
                     ),
 
@@ -138,23 +369,21 @@ class _TeamRevealPageState extends State<TeamRevealPage> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         boxShadow: _starterRevealed
-                          ? [
-                              BoxShadow(
-                                color: const Color(0xFFFFC857)
-                                    .withValues(alpha: 0.20),
-                                blurRadius: 50,
-                                spreadRadius: 8,
-                              ),
-                            ]
-                          : [],
+                            ? [
+                                BoxShadow(
+                                  color: const Color(0xFFFFC857)
+                                      .withValues(alpha: 0.20),
+                                  blurRadius: 50,
+                                  spreadRadius: 8,
+                                ),
+                              ]
+                            : [],
                         color: _starterRevealed
-                            ? const Color(0xFFFFC857)
-                                .withValues(alpha: 0.08)
+                            ? const Color(0xFFFFC857).withValues(alpha: 0.08)
                             : Colors.white.withValues(alpha: 0.03),
                         border: Border.all(
                           color: _starterRevealed
-                              ? const Color(0xFFFFC857)
-                                  .withValues(alpha: 0.4)
+                              ? const Color(0xFFFFC857).withValues(alpha: 0.4)
                               : Colors.white.withValues(alpha: 0.08),
                           width: 2,
                         ),
@@ -163,15 +392,13 @@ class _TeamRevealPageState extends State<TeamRevealPage> {
                         child: AnimatedSwitcher(
                           duration: const Duration(milliseconds: 650),
                           transitionBuilder: (child, animation) {
-                            final scaleAnimation = Tween<double>(
-                              begin: 0.4,
-                              end: 1.0,
-                            ).animate(
-                              CurvedAnimation(
-                                parent: animation,
-                                curve: Curves.easeOutBack,
-                              ),
-                            );
+                            final scaleAnimation =
+                                Tween<double>(begin: 0.4, end: 1.0).animate(
+                                  CurvedAnimation(
+                                    parent: animation,
+                                    curve: Curves.easeOutBack,
+                                  ),
+                                );
 
                             return FadeTransition(
                               opacity: animation,
@@ -258,12 +485,8 @@ class _TeamRevealPageState extends State<TeamRevealPage> {
                     // BOTÃO PARA REVELAR O STARTER
                     if (!_starterRevealed)
                       FilledButton.icon(
-                      onPressed: _countdown == null
-                          ? _revealTeam
-                          : null,
-                        icon: const Icon(
-                          Icons.catching_pokemon_rounded,
-                        ),
+                        onPressed: _countdown == null ? _revealTeam : null,
+                        icon: const Icon(Icons.catching_pokemon_rounded),
                         label: const Text('REVELAR'),
                         style: FilledButton.styleFrom(
                           backgroundColor: const Color(0xFFE53935),
@@ -283,58 +506,50 @@ class _TeamRevealPageState extends State<TeamRevealPage> {
                           alignment: WrapAlignment.center,
                           spacing: 12,
                           runSpacing: 12,
-                          children: List.generate(
-                            remainingPokemon.length,
-                            (index) {
-                              final pokemon = remainingPokemon[index];
-                              final revealed =
-                                  index < _revealedPokemonCount;
+                          children: List.generate(remainingPokemon.length, (
+                            index,
+                          ) {
+                            final pokemon = remainingPokemon[index];
+                            final revealed = index < _revealedPokemonCount;
 
-                              return AnimatedSwitcher(
-                                duration: const Duration(milliseconds: 500),
-                                transitionBuilder: (child, animation) {
-                                  final scaleAnimation = Tween<double>(
-                                    begin: 0.65,
-                                    end: 1.0,
-                                  ).animate(
-                                    CurvedAnimation(
-                                      parent: animation,
-                                      curve: Curves.easeOutBack,
-                                    ),
-                                  );
-
-                                  return FadeTransition(
-                                    opacity: animation,
-                                    child: ScaleTransition(
-                                      scale: scaleAnimation,
-                                      child: child,
-                                    ),
-                                  );
-                                },
-                                child: Container(
-                                  key: ValueKey(
-                                    '$index-$revealed',
-                                  ),
-                                  width: 100,
-                                  height: 125,
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: revealed
-                                        ? Colors.white.withValues(
-                                            alpha: 0.04,
-                                          )
-                                        : Colors.white.withValues(
-                                            alpha: 0.02,
-                                          ),
-                                    borderRadius:
-                                        BorderRadius.circular(14),
-                                    border: Border.all(
-                                      color: Colors.white.withValues(
-                                        alpha:
-                                            revealed ? 0.10 : 0.05,
+                            return AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 500),
+                              transitionBuilder: (child, animation) {
+                                final scaleAnimation =
+                                    Tween<double>(
+                                      begin: 0.65,
+                                      end: 1.0,
+                                    ).animate(
+                                      CurvedAnimation(
+                                        parent: animation,
+                                        curve: Curves.easeOutBack,
                                       ),
+                                    );
+
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: ScaleTransition(
+                                    scale: scaleAnimation,
+                                    child: child,
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                key: ValueKey('$index-$revealed'),
+                                width: 100,
+                                height: 125,
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: revealed
+                                      ? Colors.white.withValues(alpha: 0.04)
+                                      : Colors.white.withValues(alpha: 0.02),
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(
+                                    color: Colors.white.withValues(
+                                      alpha: revealed ? 0.10 : 0.05,
                                     ),
-                                    boxShadow: revealed
+                                  ),
+                                  boxShadow: revealed
                                       ? [
                                           BoxShadow(
                                             color: const Color(0xFFE53935)
@@ -344,48 +559,42 @@ class _TeamRevealPageState extends State<TeamRevealPage> {
                                           ),
                                         ]
                                       : [],
-                                  ),
-                                  child: revealed
-                                      ? Column(
-                                          children: [
-                                            Expanded(
-                                              child: PokemonSprite(
-                                                pokemonId: pokemon.id,
-                                                size: 72,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              pokemon.name,
-                                              maxLines: 1,
-                                              overflow:
-                                                  TextOverflow.ellipsis,
-                                              textAlign:
-                                                  TextAlign.center,
-                                              style:
-                                                  const TextStyle(
-                                                fontSize: 11,
-                                                fontWeight:
-                                                    FontWeight.w800,
-                                              ),
-                                            ),
-                                          ],
-                                        )
-                                      : const Center(
-                                          child: Text(
-                                            '?',
-                                            style: TextStyle(
-                                              fontSize: 38,
-                                              fontWeight:
-                                                  FontWeight.w900,
-                                              color: Colors.white12,
+                                ),
+                                child: revealed
+                                    ? Column(
+                                        children: [
+                                          Expanded(
+                                            child: PokemonSprite(
+                                              pokemonId: pokemon.id,
+                                              size: 72,
                                             ),
                                           ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            pokemon.name,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            textAlign: TextAlign.center,
+                                            style: const TextStyle(
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w800,
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    : const Center(
+                                        child: Text(
+                                          '?',
+                                          style: TextStyle(
+                                            fontSize: 38,
+                                            fontWeight: FontWeight.w900,
+                                            color: Colors.white12,
+                                          ),
                                         ),
-                                ),
-                              );
-                            },
-                          ),
+                                      ),
+                              ),
+                            );
+                          }),
                         ),
                       ),
 
@@ -393,10 +602,13 @@ class _TeamRevealPageState extends State<TeamRevealPage> {
 
                       if (_revealedPokemonCount == remainingPokemon.length)
                         FilledButton.icon(
-                          onPressed: _currentPlayerIndex < widget.players.length - 1
+                          onPressed:
+                              _currentPlayerIndex < widget.players.length - 1
                               ? _nextPlayer
                               : () {
-                                  Navigator.pop(context);
+                                  setState(() {
+                                    _showFinalScreen = true;
+                                  });
                                 },
                           icon: Icon(
                             _currentPlayerIndex < widget.players.length - 1
@@ -417,7 +629,6 @@ class _TeamRevealPageState extends State<TeamRevealPage> {
                             ),
                           ),
                         ),
-
                     ],
                   ],
                 ),

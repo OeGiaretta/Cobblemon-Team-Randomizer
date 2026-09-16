@@ -42,14 +42,25 @@ class PokemonTeamSlot extends StatelessWidget {
                       .withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Text(
-                  'STARTER',
-                  style: TextStyle(
-                    color: Color(0xFFFFC857),
-                    fontSize: 8,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 0.6,
-                  ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.auto_awesome_rounded,
+                      size: 10,
+                      color: Color(0xFFFFC857),
+                    ),
+                    SizedBox(width: 4),
+                    Text(
+                      'STARTER',
+                      style: TextStyle(
+                        color: Color(0xFFFFC857),
+                        fontSize: 8,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0.6,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             )
@@ -57,22 +68,29 @@ class PokemonTeamSlot extends StatelessWidget {
             const SizedBox(height: 20),
 
           Expanded(
-            child: PokemonSprite(
-              pokemonId: pokemon.id,
-              size: 110,
+            child: Center(
+              child: AnimatedScale(
+                scale: 1.0,
+                duration: const Duration(milliseconds: 250),
+                child: PokemonSprite(
+                  pokemonId: pokemon.id,
+                  size: 125,
+                ),
+              ),
             ),
           ),
 
           const SizedBox(height: 6),
 
           Text(
-            pokemon.name,
+            pokemon.name.toUpperCase(),
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w800,
+              fontSize: 13,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 0.3,
             ),
           ),
 
