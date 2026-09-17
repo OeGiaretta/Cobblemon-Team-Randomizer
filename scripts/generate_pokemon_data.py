@@ -4,6 +4,7 @@ from pathlib import Path
 import time
 
 OUTPUT_PATH = Path("assets/data/pokemon.json")
+INPUT_PATH = Path("assets/data/old_pokemon.json")
 
 MAX_POKEMON_ID = 1025
 
@@ -69,44 +70,64 @@ def fetch_json(url, max_attempts=5):
         f"Falha após {max_attempts} tentativas."
     )
 
+def is_final_evolution(pokemon_id):
+    species_url = (
+        f"https://pokeapi.co/api/v2/pokemon-species/{pokemon_id}/"
+    )
+
+    species_data = fetch_json(species_url)
+
+    evolution_chain_url = species_data["evolution_chain"]["url"]
+    evolution_data = fetch_json(evolution_chain_url)
+
+    pokemon_name = species_data["name"]
+
+    def find_species(chain):
+        if chain["species"]["name"] == pokemon_name:
+            return chain
+
+        for evolution in chain["evolves_to"]:
+            result = find_species(evolution)
+
+            if result is not None:
+                return result
+
+        return None
+
+    species_node = find_species(
+        evolution_data["chain"]
+    )
+
+    if species_node is None:
+        return False
+
+    return len(species_node["evolves_to"]) == 0
 
 def load_pokemon():
+    print("Filtrando apenas formas finais...")
+
+    with open(INPUT_PATH, "r", encoding="utf-8") as file:
+        original_pokemon = json.load(file)
+
     pokemon_list = []
 
-    print("Baixando dados dos Pokémon...")
+    total = len(original_pokemon)
 
-    for pokemon_id in range(1, MAX_POKEMON_ID + 1):
-        url = f"https://pokeapi.co/api/v2/pokemon/{pokemon_id}"
-
+    for index, pokemon in enumerate(original_pokemon, start=1):
         try:
-            data = fetch_json(url)
-
-            types = [
-                item["type"]["name"]
-                for item in sorted(
-                    data["types"],
-                    key=lambda item: item["slot"],
-                )
-            ]
-
-            pokemon = {
-                "id": pokemon_id,
-                "name": data["name"].replace("-", " ").title(),
-                "types": types,
-                "isStarter": pokemon_id in STARTER_IDS,
-            }
-
-            pokemon_list.append(pokemon)
+            if is_final_evolution(pokemon["id"]):
+                pokemon_list.append(pokemon)
+                status = "✓"
+            else:
+                status = "✗"
 
             print(
-                f"[{pokemon_id}/{MAX_POKEMON_ID}] "
-                f"{pokemon['name']}"
+                f"[{index}/{total}] {status} {pokemon['name']}"
             )
 
         except Exception as error:
             print(
-                f"Erro ao carregar Pokémon "
-                f"{pokemon_id}: {error}"
+                f"Erro ao verificar {pokemon['name']}: {error}"
             )
 
     return pokemon_list

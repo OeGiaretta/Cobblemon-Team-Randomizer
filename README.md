@@ -30,6 +30,39 @@ Cada equipe possui exatamente **1 Pokémon designado como Starter**.
 
 Um Pokémon sorteado para um jogador não pode aparecer novamente no time de outro jogador durante o mesmo sorteio.
 
+### Formas evolutivas finais
+
+O sorteio utiliza apenas Pokémon que estejam no **estágio final de sua linha evolutiva** ou espécies que **não possuem evolução**.
+
+Isso evita que formas básicas ou intermediárias sejam sorteadas junto com Pokémon completamente evoluídos.
+
+Exemplos:
+
+- Charmander ❌
+- Charmeleon ❌
+- Charizard ✅
+
+- Bulbasaur ❌
+- Ivysaur ❌
+- Venusaur ✅
+
+- Caterpie ❌
+- Metapod ❌
+- Butterfree ✅
+
+Pokémon que não possuem evolução também permanecem disponíveis no sorteio.
+
+A base atual possui **568 Pokémon elegíveis**, incluindo os **27 starters finais** das nove gerações.
+
+### 🔧 Usando todos os Pokémon
+
+Por padrão, o randomizador utiliza apenas Pokémon no estágio final de sua linha evolutiva ou espécies que não possuem evolução.
+
+O dataset original completo foi preservado no projeto:
+
+```text
+assets/data/old_pokemon.json
+
 ### Tipagens únicas
 
 Dentro de uma equipe, nenhuma tipagem pode se repetir.
@@ -95,7 +128,7 @@ lib/
 Clone o repositório:
 
 ```bash
-git clone <URL-DO-SEU-REPOSITORIO>
+git clone https://github.com/OeGiaretta/Cobblemon-Team-Randomizer
 ```
 
 Entre na pasta:
