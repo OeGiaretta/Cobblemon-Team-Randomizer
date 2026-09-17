@@ -149,6 +149,8 @@ Execute no Chrome:
 flutter run -d chrome
 ```
 
+Ou apenas acesse o link: https://pokerandom-one.vercel.app/
+
 ## 🧪 Verificação
 
 Para analisar o projeto:
